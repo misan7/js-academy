@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS Academy | Aprende JavaScript</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            colors: {
+              primary: "#4f46e5",
+              "dark-bg": "#0f172a",
+            },
+          },
+        },
+      };
+    </script>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        background-color: #0f172a;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      function App() {
+        return (
+          <div className="min-h-screen pt-12">
+            <div className="max-w-4xl mx-auto p-6 bg-dark-bg rounded-xl shadow-2xl border border-primary/50">
+              <h1 className="text-4xl font-extrabold text-primary mb-4 border-b pb-2">
+                JS Academy CodeWorld | Iniciando
+              </h1>
+              <p className="text-lg text-gray-300">
+                Entorno de React y Tailwind listo
+              </p>
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
