@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JS Academy | Aprende JavaScript</title>
+    <title>JS CodeWorld Academy</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -41,9 +41,8 @@
 
       function ExerciseOne() {
         const STORAGE_KEY = "js-academy-ex1-completed";
-        const [code, setCode] = useState(
-          `// Escribe un console.log con un mensaje gracioso\nconsole.log('¡Hola desde JS Academy!');`
-        );
+        const CONSOLE_COMMENT = `// Escribe un console.log con un mensaje\n`;
+        const [code, setCode] = useState(CONSOLE_COMMENT);
         const [output, setOutput] = useState([]);
         const [status, setStatus] = useState(null);
         const [completed, setCompleted] = useState(
@@ -55,38 +54,8 @@
           localStorage.setItem(STORAGE_KEY, completed ? "1" : "0");
         }, [completed]);
 
-        const funnyMessages = [
-          "¡Cuidado con los ladrillos invisibles!",
-          "He saltado tan alto que olvidé la contraseña.",
-          "Puse un console.log y apareció un Goomba.",
-          "Esta línea de código se come las monedas.",
-          "Si no funciona, añade más café."
-        ];
-
-        function insertRandomMessage() {
-          const msg = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
-          // intenta insertar en la posición del cursor
-          const ta = textareaRef.current;
-          if (ta) {
-            const start = ta.selectionStart;
-            const end = ta.selectionEnd;
-            const before = code.slice(0, start);
-            const after = code.slice(end);
-            const insert = `console.log('${msg}');`;
-            const newCode = `${before}${insert}${after}`;
-            setCode(newCode);
-            // mover cursor después del insert
-            setTimeout(() => {
-              ta.selectionStart = ta.selectionEnd = start + insert.length;
-              ta.focus();
-            }, 0);
-          } else {
-            setCode(code + `\nconsole.log('${msg}');`);
-          }
-        }
-
         function resetTemplate() {
-          setCode(`// Escribe un console.log con un mensaje gracioso\nconsole.log('¡Hola desde JS Academy!');`);
+          setCode(CONSOLE_COMMENT);
           setOutput([]);
           setStatus(null);
         }
@@ -96,8 +65,14 @@
           const originalConsoleLog = console.log;
           try {
             console.log = function (...args) {
-              logs.push(args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '));
-              // también escribir en consola real para debug
+              logs.push(
+                args
+                  .map(a =>
+                    typeof a === "object" ? JSON.stringify(a) : String(a)
+                  )
+                  .join(" ")
+              );
+              // Escribe en consola real para debug
               originalConsoleLog.apply(console, args);
             };
             // Ejecutar en contexto seguro lo más posible
@@ -120,30 +95,47 @@
           const hasConsoleLog = /console\.log\s*\(/.test(code);
           const produced = run.logs && run.logs.filter(Boolean).length > 0;
           if (!hasConsoleLog) {
-            setStatus({ ok: false, message: 'Añade un console.log(...) en tu código.' });
+            setStatus({
+              ok: false,
+              message:
+                "Añade un console.log('con un mensaje dentro') en tu código.",
+            });
             setCompleted(false);
             return;
           }
           if (!produced) {
-            setStatus({ ok: false, message: 'Tu código no produjo salida. Asegúrate de usar console.log con un mensaje.' });
+            setStatus({
+              ok: false,
+              message:
+                "Tu código no produjo salida. Asegúrate de usar console.log con un mensaje.",
+            });
             setCompleted(false);
             return;
           }
-          setStatus({ ok: true, message: '¡Perfecto! Tu console.log imprimió un mensaje.' });
+          setStatus({
+            ok: true,
+            message: "¡Perfecto! Tu console.log imprimió un mensaje.",
+          });
           setCompleted(true);
         }
 
         return (
           <div className="mt-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-primary">Ejercicio 1 — Tu primer console.log</h2>
-              <div className="text-sm text-gray-300">Nivel: Principiante</div>
+              <h2 className="text-2xl font-bold text-primary">
+                Ejercicio 1 — Tu primer "Hello World"
+              </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
                 <div className="mb-2 text-gray-200">
-                  Enunciado: Escribe una línea con <code className="px-1 py-0.5 rounded bg-slate-800">console.log('tu mensaje')</code> que muestre un mensaje gracioso.
+                  {`Escribe una línea con `}
+                  <code className="px-1 py-0.5 rounded bg-slate-800">
+                    console.log('tu mensaje')
+                  </code>
+                  {` que muestre un mensaje gracioso. Ejemplo: Salté tan alto que caí
+                  encima de Bowser.`}
                 </div>
 
                 <div className="bg-[#071029] p-4 rounded-lg border border-primary/60 bricks">
@@ -157,13 +149,33 @@
                 </div>
 
                 <div className="flex gap-2 mt-3">
-                  <button onClick={runUserCode} className="px-3 py-2 bg-primary text-white rounded shadow">Run</button>
-                  <button onClick={checkSolution} className="px-3 py-2 bg-blue-600 text-white rounded shadow">Comprobar</button>
-                  <button onClick={insertRandomMessage} className="px-3 py-2 bg-sky-500 text-white rounded">Insertar mensaje aleatorio</button>
-                  <button onClick={resetTemplate} className="px-3 py-2 bg-slate-700 text-white rounded">Reset</button>
+                  <button
+                    onClick={runUserCode}
+                    className="px-3 py-2 bg-primary text-white rounded shadow"
+                  >
+                    Ejecutar Código
+                  </button>
+                  <button
+                    onClick={checkSolution}
+                    className="px-3 py-2 bg-blue-600 text-white rounded shadow"
+                  >
+                    Comprobar
+                  </button>
+                  <button
+                    onClick={resetTemplate}
+                    className="px-3 py-2 bg-slate-700 text-white rounded"
+                  >
+                    Reiniciar
+                  </button>
                 </div>
                 {status && (
-                  <div className={`mt-3 p-3 rounded ${status.ok ? 'bg-green-700 text-white' : 'bg-red-700 text-white'}`}>
+                  <div
+                    className={`mt-3 p-3 rounded ${
+                      status.ok
+                        ? "bg-green-700 text-white"
+                        : "bg-red-700 text-white"
+                    }`}
+                  >
                     {status.message}
                   </div>
                 )}
@@ -173,14 +185,20 @@
                 <div className="p-3 bg-[#071029] rounded border border-primary/60">
                   <div className="flex items-center justify-between mb-2">
                     <strong className="text-primary">Salida / Consola</strong>
-                    <div className="text-xs text-gray-300">Guardado: {completed ? '✅' : '—'}</div>
+                    <div className="text-xs text-gray-300">
+                      Guardado: {completed ? "✅" : "—"}
+                    </div>
                   </div>
                   <div className="min-h-[120px] max-h-64 overflow-auto text-sm text-gray-100 font-mono bg-black/20 p-2 rounded">
                     {output.length === 0 ? (
-                      <div className="text-gray-400">Aquí aparecerá lo que imprima console.log(...)</div>
+                      <div className="text-gray-400">
+                        Aquí aparecerá lo que imprima console.log(...)
+                      </div>
                     ) : (
                       output.map((ln, i) => (
-                        <div key={i} className="py-0.5">{ln}</div>
+                        <div key={i} className="py-0.5">
+                          {ln}
+                        </div>
                       ))
                     )}
                   </div>
@@ -190,8 +208,14 @@
                   <strong className="text-primary">Consejos</strong>
                   <ul className="list-disc ml-5 mt-2">
                     <li>Usa comillas simples o dobles en tu mensaje.</li>
-                    <li>Evita código complejo: este ejercicio solo busca un console.log.</li>
-                    <li>Tu progreso se guarda localmente en el navegador.</li>
+                    <li>
+                      Evita código complejo: este ejercicio solo busca un
+                      console.log.
+                    </li>
+                    <li>
+                      Tu progreso se guarda localmente en el navegador mediante
+                      la funcionalidad localStorage.
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -204,8 +228,9 @@
         return (
           <div className="min-h-screen pt-12 pb-12">
             <div className="max-w-4xl mx-auto p-6 bg-dark-bg rounded-xl shadow-2xl border border-primary/50">
-              <h1 className="text-4xl font-extrabold text-primary mb-4 border-b pb-2">JS Academy CodeWorld</h1>
-              <p className="text-lg text-gray-300">Bienvenido — Empezaremos con ejercicios básicos para principiantes.</p>
+              <h1 className="text-4xl font-extrabold text-primary mb-4 border-b pb-2">
+                JS CodeWorld Academy
+              </h1>
 
               <ExerciseOne />
             </div>
@@ -213,8 +238,7 @@
         );
       }
 
-      // Estilos para imitar ladrillos (sutil)
-      const style = document.createElement('style');
+      const style = document.createElement("style");
       style.textContent = `
         .bricks { background-image: linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 20px, 40px 20px; background-position: 0 0, 20px 10px; }
       `;
