@@ -1,15 +1,23 @@
 const { useState, useEffect, useRef } = React;
 
 function App() {
-  const ExerciseOneComp = window.ExerciseOne;
-  const ExerciseTwoComp = window.ExerciseTwo;
+  const ExerciseComp = window.Exercise;
+  const exercises = window.EXERCISES || [];
+
   const [showModal, setShowModal] = useState(false);
+  const [pendingFrom, setPendingFrom] = useState(null);
   const [showExerciseTwo, setShowExerciseTwo] = useState(false);
+  const [showExerciseThree, setShowExerciseThree] = useState(false);
+  const [showExerciseFour, setShowExerciseFour] = useState(false);
+
   const twoRef = useRef(null);
+  const threeRef = useRef(null);
+  const fourRef = useRef(null);
 
   useEffect(() => {
     function onExerciseCompleted(e) {
-      if (e && e.detail && e.detail.exercise === 1) {
+      if (e && e.detail && typeof e.detail.exercise === "number") {
+        setPendingFrom(e.detail.exercise);
         setShowModal(true);
       }
     }
@@ -18,12 +26,52 @@ function App() {
       window.removeEventListener("exercise:completed", onExerciseCompleted);
   }, []);
 
-  function goToExerciseTwo() {
-    setShowExerciseTwo(true);
+  function goToNext() {
     setShowModal(false);
-    requestAnimationFrame(() => {
-      if (twoRef.current) twoRef.current.scrollIntoView({ behavior: "smooth" });
-    });
+    if (pendingFrom === 1) {
+      setShowExerciseTwo(true);
+      requestAnimationFrame(() => {
+        if (twoRef.current)
+          twoRef.current.scrollIntoView({ behavior: "smooth" });
+      });
+    } else if (pendingFrom === 2) {
+      setShowExerciseThree(true);
+      requestAnimationFrame(() => {
+        if (threeRef.current)
+          threeRef.current.scrollIntoView({ behavior: "smooth" });
+      });
+    } else if (pendingFrom === 3) {
+      setShowExerciseFour(true);
+      requestAnimationFrame(() => {
+        if (fourRef.current)
+          fourRef.current.scrollIntoView({ behavior: "smooth" });
+      });
+    }
+    setPendingFrom(null);
+  }
+
+  function modalTitle() {
+    if (pendingFrom === 1) return "¡Felicidades! Ejercicio 1 completado";
+    if (pendingFrom === 2) return "¡Genial! Ejercicio 2 completado";
+    if (pendingFrom === 3) return "¡Avanzando! Ejercicio 3 completado";
+    return "¡Ejercicio completado!";
+  }
+
+  function modalMessage() {
+    if (pendingFrom === 1)
+      return "¿Quieres continuar con el siguiente ejercicio sobre variables?";
+    if (pendingFrom === 2)
+      return "¿Quieres continuar con el siguiente ejercicio sobre nombres y reasignaciones?";
+    if (pendingFrom === 3)
+      return "¿Quieres continuar con el siguiente ejercicio sobre const?";
+    return "¿Quieres continuar con el siguiente ejercicio?";
+  }
+
+  function nextLabel() {
+    if (pendingFrom === 1) return "Ir a Ejercicio 2";
+    if (pendingFrom === 2) return "Ir a Ejercicio 3";
+    if (pendingFrom === 3) return "Ir a Ejercicio 4";
+    return "Ir al siguiente";
   }
 
   return (
@@ -33,8 +81,8 @@ function App() {
           JS CodeWorld Academy
         </h1>
 
-        {ExerciseOneComp ? (
-          <ExerciseOneComp />
+        {ExerciseComp ? (
+          <ExerciseComp exercise={exercises[0]} />
         ) : (
           <div className="text-gray-300">Cargando ejercicio 1...</div>
         )}
@@ -47,12 +95,9 @@ function App() {
             />
             <div className="relative bg-dark-bg border border-primary/60 rounded-lg p-6 w-full max-w-md">
               <h3 className="text-xl text-primary font-bold mb-2">
-                {" "}
-                ¡Felicidades futuro Dev!¡Ejercicio 1 completado!
+                {modalTitle()}
               </h3>
-              <p className="text-gray-300 mb-4">
-                ¿Quieres continuar con el siguiente ejercicio sobre variables?
-              </p>
+              <p className="text-gray-300 mb-4">{modalMessage()}</p>
               <div className="flex gap-2 justify-end">
                 <button
                   className="px-3 py-2 bg-slate-700 text-white rounded"
@@ -62,9 +107,9 @@ function App() {
                 </button>
                 <button
                   className="px-3 py-2 bg-primary text-white rounded"
-                  onClick={goToExerciseTwo}
+                  onClick={goToNext}
                 >
-                  Ir a Ejercicio 2
+                  {nextLabel()}
                 </button>
               </div>
             </div>
@@ -73,10 +118,30 @@ function App() {
 
         {showExerciseTwo && (
           <div ref={twoRef} className="mt-8">
-            {ExerciseTwoComp ? (
-              <ExerciseTwoComp />
+            {ExerciseComp ? (
+              <ExerciseComp exercise={exercises[1]} />
             ) : (
               <div className="text-gray-300">Cargando ejercicio 2...</div>
+            )}
+          </div>
+        )}
+
+        {showExerciseThree && (
+          <div ref={threeRef} className="mt-8">
+            {ExerciseComp ? (
+              <ExerciseComp exercise={exercises[2]} />
+            ) : (
+              <div className="text-gray-300">Cargando ejercicio 3...</div>
+            )}
+          </div>
+        )}
+
+        {showExerciseFour && (
+          <div ref={fourRef} className="mt-8">
+            {ExerciseComp ? (
+              <ExerciseComp exercise={exercises[3]} />
+            ) : (
+              <div className="text-gray-300">Cargando ejercicio 4...</div>
             )}
           </div>
         )}

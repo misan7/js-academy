@@ -1,8 +1,8 @@
 const { useState, useRef } = React;
 
-function ExerciseTwo() {
-  const STORAGE_KEY = "js-academy-ex2-completed";
-  const TEMPLATE = `// Ejemplo: const animal = "Unicornio" \n// Escribe tu código debajo: \n`;
+function Exercise({ exercise }) {
+  const STORAGE_KEY = `js-academy-ex${exercise.id}-completed`;
+  const TEMPLATE = exercise.template;
   const [code, setCode] = useState(TEMPLATE);
   const [output, setOutput] = useState([]);
   const [status, setStatus] = useState(null);
@@ -43,26 +43,42 @@ function ExerciseTwo() {
       console.log = originalConsoleLog;
     }
 
-    const hasProducto = /\b(producto)\b/.test(code);
-    const hasPrecio = /\b(precio)\b/.test(code);
-    const hasDisponible = /\b(disponible)\b/.test(code);
-    const produced = logs && logs.filter(Boolean).length > 0;
+    // Validaciones según metadatos del ejercicio
+    const v = exercise.validators || {};
 
-    if (!hasProducto || !hasPrecio || !hasDisponible) {
-      setStatus({
-        ok: false,
-        message:
-          "Declara las variables producto, precio y disponible (usa var/let/const).",
-      });
-      setCompleted(false);
-      return;
+    if (v.requiredNames && Array.isArray(v.requiredNames)) {
+      const missing = v.requiredNames.some(
+        name => !new RegExp(`\\b${name}\\b`).test(code)
+      );
+      if (missing) {
+        setStatus({
+          ok: false,
+          message: v.messageMissingPattern || "Faltan variables requeridas.",
+        });
+        setCompleted(false);
+        return;
+      }
     }
 
+    if (v.requiredPatterns && Array.isArray(v.requiredPatterns)) {
+      const ok = v.requiredPatterns.every(pat => pat.test(code));
+      if (!ok) {
+        setStatus({
+          ok: false,
+          message:
+            v.messageMissingPattern || "No se cumple la condición requerida.",
+        });
+        setCompleted(false);
+        return;
+      }
+    }
+
+    const produced = logs && logs.filter(Boolean).length > 0;
     if (!produced) {
       setStatus({
         ok: false,
         message:
-          "Tu código no imprimió nada en consola. Asegúrate de usar console.log para mostrar las variables.",
+          v.messageMissingPattern || "Tu código no imprimió nada en consola.",
       });
       setCompleted(false);
       return;
@@ -70,67 +86,27 @@ function ExerciseTwo() {
 
     setStatus({
       ok: true,
-      message:
-        "¡Bien! Has declarado las variables y las has mostrado por consola.",
+      message: exercise.successMessage || "Ejercicio completado.",
     });
     setCompleted(true);
     localStorage.setItem(STORAGE_KEY, "1");
+
+    // Emitimos evento para el App
+    window.dispatchEvent(
+      new CustomEvent("exercise:completed", {
+        detail: { exercise: exercise.id },
+      })
+    );
   }
 
   return (
-    <div id="exercise-2" className="mt-8">
+    <div id={`exercise-${exercise.id}`} className="mt-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-primary">
-          Ejercicio 2 — Aprendiendo Variables I
-        </h2>
+        <h2 className="text-2xl font-bold text-primary">{exercise.title}</h2>
       </div>
 
       <div className="mb-4 text-gray-200 leading-relaxed space-y-3 text-sm md:text-base">
-        <p className="text-gray-300">
-          Las variables sirven para almacenar y manipular los datos de una
-          aplicación
-        </p>
-        <p className="text-gray-300">
-          Declara tres variables que almacenen la información de un animal
-          mitológico. Este ejercicio te ayudará a practicar la sintaxis de
-          declaración (<span className="font-semibold">const</span> o{" "}
-          <span className="font-semibold">let</span>) y la asignación de valores
-          según el tipo de dato.
-        </p>
-
-        <p className="font-semibold">Declara las siguientes variables:</p>
-
-        <ol className="list-decimal list-inside ml-4 space-y-2 text-gray-200">
-          <li>
-            <code className="bg-slate-800 px-1 py-0.5 rounded">
-              nombreAnimal
-            </code>
-            : Debe ser un <span className="italic">string</span> y almacenar el
-            nombre de un animal mitológico (ej:{" "}
-            <span className="font-medium">"Unicornio"</span>).
-          </li>
-          <li>
-            <code className="bg-slate-800 px-1 py-0.5 rounded">edad</code>: Debe
-            ser un <span className="italic">number</span> y almacenar su edad en
-            años (ej: <span className="font-medium">220</span>).
-          </li>
-          <li>
-            <code className="bg-slate-800 px-1 py-0.5 rounded">existe</code>:
-            Debe ser un <span className="italic">boolean</span> e indicar si
-            existe en la actualidad (ej:{" "}
-            <span className="font-medium">true</span> o{" "}
-            <span className="font-medium">false</span>).
-          </li>
-        </ol>
-
-        <p className="text-gray-300">
-          Asegúrate de asignarles un valor inicial. Finalmente, utiliza la
-          función{" "}
-          <code className="bg-slate-800 px-1 py-0.5 rounded">
-            console.log()
-          </code>{" "}
-          para mostrar el valor de las tres variables por la consola.
-        </p>
+        <div dangerouslySetInnerHTML={{ __html: exercise.instructions }} />
       </div>
 
       <div className="bg-[#071029] p-4 rounded-lg border border-primary/60 bricks">
@@ -148,7 +124,7 @@ function ExerciseTwo() {
           onClick={runAndValidate}
           className="px-3 py-2 bg-blue-600 text-white rounded shadow"
         >
-          Comprobar
+          Ejecutar Código
         </button>
         <button
           onClick={resetTemplate}
@@ -184,4 +160,4 @@ function ExerciseTwo() {
   );
 }
 
-window.ExerciseTwo = ExerciseTwo;
+window.Exercise = Exercise;
