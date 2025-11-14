@@ -71,6 +71,13 @@ function ExerciseOne() {
       message: "¡Perfecto! Tu console.log imprimió un mensaje.",
     });
     setCompleted(true);
+    try {
+      window.dispatchEvent(
+        new CustomEvent("exercise:completed", { detail: { exercise: 1 } })
+      );
+    } catch (e) {
+      console.log("error dispatching", e);
+    }
   }
 
   return (
@@ -81,87 +88,83 @@ function ExerciseOne() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2">
-          <div className="mb-2 text-gray-200">
-            {`Escribe una línea con `}
-            <code className="px-1 py-0.5 rounded bg-slate-800">
-              console.log('tu mensaje')
-            </code>
-            {` que muestre un mensaje gracioso. Ejemplo: Salté tan alto que caí encima de Bowser.`}
-          </div>
+      <div className="mb-2 text-gray-200">
+        {`Escribe una línea con `}
+        <code className="px-1 py-0.5 rounded bg-slate-800">
+          console.log('tu mensaje')
+        </code>
+        {` que muestre un mensaje gracioso. Ejemplo: Salté tan alto que caí encima de Bowser.`}
+      </div>
 
-          <div className="bg-[#071029] p-4 rounded-lg border border-primary/60 bricks">
-            <textarea
-              ref={textareaRef}
-              value={code}
-              onChange={e => setCode(e.target.value)}
-              rows={10}
-              className="w-full bg-transparent text-gray-100 font-mono text-sm p-3 rounded outline-none resize-none"
-            />
-          </div>
+      <div className="bg-[#071029] p-4 rounded-lg border border-primary/60 bricks">
+        <textarea
+          ref={textareaRef}
+          value={code}
+          onChange={e => setCode(e.target.value)}
+          rows={10}
+          className="w-full bg-transparent text-gray-100 font-mono text-sm p-3 rounded outline-none resize-none"
+        />
+      </div>
 
-          <div className="flex gap-2 mt-3">
-            <button
-              onClick={handleCheck}
-              className="px-3 py-2 bg-blue-600 text-white rounded shadow"
-            >
-              Ejecutar código
-            </button>
-            <button
-              onClick={resetTemplate}
-              className="px-3 py-2 bg-slate-700 text-white rounded"
-            >
-              Reiniciar
-            </button>
-          </div>
-          {status && (
-            <div
-              className={`mt-3 p-3 rounded ${
-                status.ok ? "bg-green-700 text-white" : "bg-red-700 text-white"
-              }`}
-            >
-              {status.message}
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={handleCheck}
+          className="px-3 py-2 bg-blue-600 text-white rounded shadow"
+        >
+          Ejecutar código
+        </button>
+        <button
+          onClick={resetTemplate}
+          className="px-3 py-2 bg-slate-700 text-white rounded"
+        >
+          Reiniciar
+        </button>
+      </div>
+      {status && (
+        <div
+          className={`mt-3 p-3 rounded ${
+            status.ok ? "bg-green-700 text-white" : "bg-red-700 text-white"
+          }`}
+        >
+          {status.message}
+        </div>
+      )}
+
+      <div>
+        <div className="mt-3 p-3 bg-[#071029] rounded border border-primary/60">
+          <div className="flex items-center justify-between mb-2">
+            <strong className="text-primary">Salida / Consola</strong>
+            <div className="text-xs text-gray-300">
+              Guardado: {completed ? "✅" : "—"}
             </div>
-          )}
+          </div>
+          <div className="min-h-[120px] max-h-64 overflow-auto text-sm text-gray-100 font-mono bg-black/20 p-2 rounded">
+            {output.length === 0 ? (
+              <div className="text-gray-400">
+                Aquí aparecerá lo que imprima console.log(...)
+              </div>
+            ) : (
+              output.map((ln, i) => (
+                <div key={i} className="py-0.5">
+                  {ln}
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-        <div>
-          <div className="p-3 bg-[#071029] rounded border border-primary/60">
-            <div className="flex items-center justify-between mb-2">
-              <strong className="text-primary">Salida / Consola</strong>
-              <div className="text-xs text-gray-300">
-                Guardado: {completed ? "✅" : "—"}
-              </div>
-            </div>
-            <div className="min-h-[120px] max-h-64 overflow-auto text-sm text-gray-100 font-mono bg-black/20 p-2 rounded">
-              {output.length === 0 ? (
-                <div className="text-gray-400">
-                  Aquí aparecerá lo que imprima console.log(...)
-                </div>
-              ) : (
-                output.map((ln, i) => (
-                  <div key={i} className="py-0.5">
-                    {ln}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div className="mt-3 p-3 bg-[#071029] rounded border border-primary/60 text-sm text-gray-300">
-            <strong className="text-primary">Consejos</strong>
-            <ul className="list-disc ml-5 mt-2">
-              <li>Usa comillas simples o dobles en tu mensaje.</li>
-              <li>
-                Evita código complejo: este ejercicio solo busca un console.log.
-              </li>
-              <li>
-                Tu progreso se guarda localmente en el navegador mediante
-                localStorage.
-              </li>
-            </ul>
-          </div>
+        <div className="mt-3 p-3 bg-[#071029] rounded border border-primary/60 text-sm text-gray-300">
+          <strong className="text-primary">Consejos</strong>
+          <ul className="list-disc ml-5 mt-2">
+            <li>Usa comillas simples o dobles en tu mensaje.</li>
+            <li>
+              Evita código complejo: este ejercicio solo busca un console.log.
+            </li>
+            <li>
+              Tu progreso se guarda localmente en el navegador mediante
+              localStorage.
+            </li>
+          </ul>
         </div>
       </div>
     </div>

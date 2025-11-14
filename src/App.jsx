@@ -1,6 +1,30 @@
+const { useState, useEffect, useRef } = React;
+
 function App() {
-  // ExerciseOne estará disponible en window después de cargar ExerciseOne.jsx
-  const ExerciseComp = window.ExerciseOne;
+  const ExerciseOneComp = window.ExerciseOne;
+  const ExerciseTwoComp = window.ExerciseTwo;
+  const [showModal, setShowModal] = useState(false);
+  const [showExerciseTwo, setShowExerciseTwo] = useState(false);
+  const twoRef = useRef(null);
+
+  useEffect(() => {
+    function onExerciseCompleted(e) {
+      if (e && e.detail && e.detail.exercise === 1) {
+        setShowModal(true);
+      }
+    }
+    window.addEventListener("exercise:completed", onExerciseCompleted);
+    return () =>
+      window.removeEventListener("exercise:completed", onExerciseCompleted);
+  }, []);
+
+  function goToExerciseTwo() {
+    setShowExerciseTwo(true);
+    setShowModal(false);
+    requestAnimationFrame(() => {
+      if (twoRef.current) twoRef.current.scrollIntoView({ behavior: "smooth" });
+    });
+  }
 
   return (
     <div className="min-h-screen pt-12 pb-12">
@@ -8,10 +32,53 @@ function App() {
         <h1 className="text-4xl font-extrabold text-primary mb-4 border-b pb-2">
           JS CodeWorld Academy
         </h1>
-        {ExerciseComp ? (
-          <ExerciseComp />
+
+        {ExerciseOneComp ? (
+          <ExerciseOneComp />
         ) : (
-          <div className="text-gray-300">Cargando ejercicio...</div>
+          <div className="text-gray-300">Cargando ejercicio 1...</div>
+        )}
+
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setShowModal(false)}
+            />
+            <div className="relative bg-dark-bg border border-primary/60 rounded-lg p-6 w-full max-w-md">
+              <h3 className="text-xl text-primary font-bold mb-2">
+                {" "}
+                ¡Felicidades futuro Dev!¡Ejercicio 1 completado!
+              </h3>
+              <p className="text-gray-300 mb-4">
+                ¿Quieres continuar con el siguiente ejercicio sobre variables?
+              </p>
+              <div className="flex gap-2 justify-end">
+                <button
+                  className="px-3 py-2 bg-slate-700 text-white rounded"
+                  onClick={() => setShowModal(false)}
+                >
+                  Aún no...
+                </button>
+                <button
+                  className="px-3 py-2 bg-primary text-white rounded"
+                  onClick={goToExerciseTwo}
+                >
+                  Ir a Ejercicio 2
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showExerciseTwo && (
+          <div ref={twoRef} className="mt-8">
+            {ExerciseTwoComp ? (
+              <ExerciseTwoComp />
+            ) : (
+              <div className="text-gray-300">Cargando ejercicio 2...</div>
+            )}
+          </div>
         )}
       </div>
     </div>
