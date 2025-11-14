@@ -20,10 +20,11 @@ function ExerciseOne() {
     setOutput([]);
     setStatus(null);
   }
-
-  function runUserCode() {
+  function handleCheck() {
+    setStatus(null);
     const logs = [];
     const originalConsoleLog = console.log;
+    let execError = null;
     try {
       console.log = function (...args) {
         logs.push(
@@ -36,20 +37,16 @@ function ExerciseOne() {
       const wrapped = new Function(code);
       wrapped();
       setOutput(logs);
-      return { success: true, logs };
     } catch (err) {
+      execError = err;
       setOutput(prev => [...prev, `Error: ${err.message}`]);
-      return { success: false, error: err };
     } finally {
       console.log = originalConsoleLog;
     }
-  }
 
-  function checkSolution() {
-    setStatus(null);
-    const run = runUserCode();
     const hasConsoleLog = /console\.log\s*\(/.test(code);
-    const produced = run.logs && run.logs.filter(Boolean).length > 0;
+    const produced = logs && logs.filter(Boolean).length > 0;
+
     if (!hasConsoleLog) {
       setStatus({
         ok: false,
@@ -58,15 +55,17 @@ function ExerciseOne() {
       setCompleted(false);
       return;
     }
-    if (!produced) {
+
+    if (execError || !produced) {
       setStatus({
         ok: false,
         message:
-          "Tu código no produjo salida. Asegúrate de usar console.log con un mensaje.",
+          "Tu código no produjo salida válida. Asegúrate de usar console.log con un mensaje y que no haya errores.",
       });
       setCompleted(false);
       return;
     }
+
     setStatus({
       ok: true,
       message: "¡Perfecto! Tu console.log imprimió un mensaje.",
@@ -104,16 +103,10 @@ function ExerciseOne() {
 
           <div className="flex gap-2 mt-3">
             <button
-              onClick={runUserCode}
-              className="px-3 py-2 bg-primary text-white rounded shadow"
-            >
-              Ejecutar Código
-            </button>
-            <button
-              onClick={checkSolution}
+              onClick={handleCheck}
               className="px-3 py-2 bg-blue-600 text-white rounded shadow"
             >
-              Comprobar
+              Ejecutar código
             </button>
             <button
               onClick={resetTemplate}
