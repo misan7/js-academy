@@ -106,10 +106,4 @@ function App() {
   );
 }
 
-const style = document.createElement("style");
-style.textContent = `
-  .bricks { background-image: linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 20px, 40px 20px; background-position: 0 0, 20px 10px; }
-`;
-document.head.appendChild(style);
-
 window.App = App;
