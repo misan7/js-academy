@@ -1,4 +1,4 @@
-const { useState, useRef } = React;
+const { useState, useRef, useEffect } = React;
 
 function Exercise({ exercise }) {
   const STORAGE_KEY = `js-academy-ex${exercise.id}-completed`;
@@ -10,6 +10,15 @@ function Exercise({ exercise }) {
     () => localStorage.getItem(STORAGE_KEY) === "1"
   );
   const taRef = useRef(null);
+
+  useEffect(() => {
+    setCode(exercise.template || "");
+    setOutput([]);
+    setStatus(null);
+    const key = `js-academy-ex${exercise.id}-completed`;
+    setCompleted(localStorage.getItem(key) === "1");
+    if (taRef.current) taRef.current.focus();
+  }, [exercise && exercise.id]);
 
   function resetTemplate() {
     setCode(TEMPLATE);
@@ -91,7 +100,6 @@ function Exercise({ exercise }) {
     setCompleted(true);
     localStorage.setItem(STORAGE_KEY, "1");
 
-    // Emitimos evento para el App
     window.dispatchEvent(
       new CustomEvent("exercise:completed", {
         detail: { exercise: exercise.id },

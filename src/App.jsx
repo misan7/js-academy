@@ -1,4 +1,4 @@
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect } = React;
 
 function App() {
   const ExerciseComp = window.Exercise;
@@ -6,13 +6,7 @@ function App() {
 
   const [showModal, setShowModal] = useState(false);
   const [pendingFrom, setPendingFrom] = useState(null);
-  const [showExerciseTwo, setShowExerciseTwo] = useState(false);
-  const [showExerciseThree, setShowExerciseThree] = useState(false);
-  const [showExerciseFour, setShowExerciseFour] = useState(false);
-
-  const twoRef = useRef(null);
-  const threeRef = useRef(null);
-  const fourRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0); // 0-based index of visible exercise
 
   useEffect(() => {
     function onExerciseCompleted(e) {
@@ -28,51 +22,43 @@ function App() {
 
   function goToNext() {
     setShowModal(false);
-    if (pendingFrom === 1) {
-      setShowExerciseTwo(true);
+    if (!pendingFrom) return;
+    const nextIndex = pendingFrom;
+    if (nextIndex >= 0 && nextIndex < exercises.length) {
+      setCurrentIndex(nextIndex);
       requestAnimationFrame(() => {
-        if (twoRef.current)
-          twoRef.current.scrollIntoView({ behavior: "smooth" });
-      });
-    } else if (pendingFrom === 2) {
-      setShowExerciseThree(true);
-      requestAnimationFrame(() => {
-        if (threeRef.current)
-          threeRef.current.scrollIntoView({ behavior: "smooth" });
-      });
-    } else if (pendingFrom === 3) {
-      setShowExerciseFour(true);
-      requestAnimationFrame(() => {
-        if (fourRef.current)
-          fourRef.current.scrollIntoView({ behavior: "smooth" });
+        const el = document.querySelector("#root");
+        if (el) el.scrollIntoView({ behavior: "smooth" });
       });
     }
     setPendingFrom(null);
   }
 
   function modalTitle() {
-    if (pendingFrom === 1) return "¡Felicidades! Ejercicio 1 completado";
-    if (pendingFrom === 2) return "¡Genial! Ejercicio 2 completado";
-    if (pendingFrom === 3) return "¡Avanzando! Ejercicio 3 completado";
-    return "¡Ejercicio completado!";
+    const id = pendingFrom;
+    if (typeof id !== "number") return "¡Ejercicio completado!";
+    return `¡Felicidades! Ejercicio ${id} completado`;
   }
 
   function modalMessage() {
-    if (pendingFrom === 1)
-      return "¿Quieres continuar con el siguiente ejercicio sobre variables?";
-    if (pendingFrom === 2)
-      return "¿Quieres continuar con el siguiente ejercicio sobre nombres y reasignaciones?";
-    if (pendingFrom === 3)
-      return "¿Quieres continuar con el siguiente ejercicio sobre const?";
-    return "¿Quieres continuar con el siguiente ejercicio?";
+    const id = pendingFrom;
+    if (typeof id !== "number")
+      return "¿Quieres continuar con el siguiente ejercicio?";
+    const next = id + 1;
+    if (next > exercises.length)
+      return "Has completado todos los ejercicios disponibles.";
+    return `¿Quieres continuar con el siguiente ejercicio (${next})?`;
   }
 
   function nextLabel() {
-    if (pendingFrom === 1) return "Ir a Ejercicio 2";
-    if (pendingFrom === 2) return "Ir a Ejercicio 3";
-    if (pendingFrom === 3) return "Ir a Ejercicio 4";
-    return "Ir al siguiente";
+    const id = pendingFrom;
+    if (typeof id !== "number") return "Ir al siguiente";
+    const next = id + 1;
+    if (next > exercises.length) return "Finalizar";
+    return `Ir a Ejercicio ${next}`;
   }
+
+  const currentExercise = exercises[currentIndex];
 
   return (
     <div className="min-h-screen pt-12 pb-12">
@@ -81,10 +67,10 @@ function App() {
           JS CodeWorld Academy
         </h1>
 
-        {ExerciseComp ? (
-          <ExerciseComp exercise={exercises[0]} />
+        {ExerciseComp && currentExercise ? (
+          <ExerciseComp exercise={currentExercise} />
         ) : (
-          <div className="text-gray-300">Cargando ejercicio 1...</div>
+          <div className="text-gray-300">Cargando ejercicio...</div>
         )}
 
         {showModal && (
@@ -115,42 +101,11 @@ function App() {
             </div>
           </div>
         )}
-
-        {showExerciseTwo && (
-          <div ref={twoRef} className="mt-8">
-            {ExerciseComp ? (
-              <ExerciseComp exercise={exercises[1]} />
-            ) : (
-              <div className="text-gray-300">Cargando ejercicio 2...</div>
-            )}
-          </div>
-        )}
-
-        {showExerciseThree && (
-          <div ref={threeRef} className="mt-8">
-            {ExerciseComp ? (
-              <ExerciseComp exercise={exercises[2]} />
-            ) : (
-              <div className="text-gray-300">Cargando ejercicio 3...</div>
-            )}
-          </div>
-        )}
-
-        {showExerciseFour && (
-          <div ref={fourRef} className="mt-8">
-            {ExerciseComp ? (
-              <ExerciseComp exercise={exercises[3]} />
-            ) : (
-              <div className="text-gray-300">Cargando ejercicio 4...</div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
 }
 
-// Añadimos estilo 'bricks' desde aquí para mantenerlo centralizado
 const style = document.createElement("style");
 style.textContent = `
   .bricks { background-image: linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 20px, 40px 20px; background-position: 0 0, 20px 10px; }
