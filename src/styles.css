@@ -1,8 +1,10 @@
 :root {
-  /* Core palette (kept in sync with tailwind.config in index.html) */
-  --color-primary: #ff6b00;
-  --color-dark-bg: #0b1220;
-  --color-accent-warm: #ffd27f;
+  /* Core palette - synchronized with tailwind.config in index.html */
+  /* tailwind.config colors: primary: #FA7F8F, secondary: #ffdd8c, dark-bg: #333333, accent-warm: #121212 */
+  --color-primary: #fa7f8f;
+  --color-secondary: #ffdd8c;
+  --color-dark-bg: #1e1e1e;
+  --color-accent-warm: #121212;
   --text-muted: #94a3b8;
   --console-bg: rgba(0, 0, 0, 0.2);
 }
