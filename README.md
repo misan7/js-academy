@@ -2,7 +2,7 @@
 
 Una aplicación educativa interactiva para aprender fundamentos de JavaScript mediante ejercicios prácticos y validación en tiempo real.
 
-![Version](https://img.shields.io/badge/version-0.0.1-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![React](https://img.shields.io/badge/React-18.x-61dafb)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
