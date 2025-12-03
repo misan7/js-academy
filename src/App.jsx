@@ -2,8 +2,10 @@ const { useState, useEffect } = React;
 
 function App() {
   const ExerciseComp = window.Exercise;
+  const MenuComp = window.Menu;
   const exercises = window.EXERCISES || [];
 
+  const [gameState, setGameState] = useState("menu"); // "menu" or "playing"
   const [showModal, setShowModal] = useState(false);
   const [pendingFrom, setPendingFrom] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0); // 0-based index of visible exercise
@@ -60,6 +62,16 @@ function App() {
 
   const currentExercise = exercises[currentIndex];
 
+  function startGame() {
+    setGameState("playing");
+  }
+
+  // Render Menu
+  if (gameState === "menu") {
+    return MenuComp ? <MenuComp onStart={startGame} /> : <div>Cargando...</div>;
+  }
+
+  // Render Exercises
   return (
     <div className="min-h-screen pt-12 pb-12">
       <div className="max-w-4xl mx-auto p-6 bg-dark-bg rounded-xl shadow-2xl border border-primary/50">
